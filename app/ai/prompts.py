@@ -61,3 +61,38 @@ def build_messages(user_text: str) -> list[dict]:
         *FEW_SHOT_EXAMPLES,
         {"role": "user", "content": user_text},
     ]
+
+
+CATEGORIZE_SYSTEM_PROMPT = f"""You are an Indonesian expense categorizer.
+The user gives a short description of a transaction (no amount).
+Return ONLY a JSON object:
+{{
+  "tipe_transaksi": "pemasukan" | "pengeluaran",
+  "kategori": one of {ALLOWED_CATEGORIES},
+  "keterangan": <cleaned up short description>
+}}
+
+Category hints (same as before):
+- "makan", "kopi", "warung", "sarapan" → "makanan"
+- "bensin", "grab", "gojek", "ojek", "bus", "parkir" → "transport"
+- "baju", "sepatu", "mall", "belanja" → "belanja"
+- "listrik", "air", "internet", "wifi", "pulsa", "pajak" → "tagihan"
+- "nonton", "bioskop", "game", "netflix" → "hiburan"
+- "obat", "dokter", "vitamin", "rumah sakit" → "kesehatan"
+- "sekolah", "kursus", "buku", "les" → "pendidikan"
+- "gaji", "bonus", "thr" → tipe=pemasukan, kategori=gaji
+- Unknown → "lainnya"
+- Default tipe is pengeluaran unless clearly income.
+
+Return ONLY the JSON. No markdown."""
+
+
+def build_categorize_messages(description: str) -> list[dict]:
+    return [
+        {"role": "system", "content": CATEGORIZE_SYSTEM_PROMPT},
+        {"role": "user", "content": "makan siang di warteg"},
+        {"role": "assistant", "content": '{"tipe_transaksi": "pengeluaran", "kategori": "makanan", "keterangan": "makan siang di warteg"}'},
+        {"role": "user", "content": "bensin motor"},
+        {"role": "assistant", "content": '{"tipe_transaksi": "pengeluaran", "kategori": "transport", "keterangan": "bensin motor"}'},
+        {"role": "user", "content": description},
+    ]

@@ -26,10 +26,12 @@ async def extract_from_image(image_bytes: bytes, pengguna: str = "") -> TxnDraft
         "images": [base64.b64encode(image_bytes).decode("ascii")],
         "stream": False,
         "format": "json",
+        "keep_alive": "30m",
         "options": {"temperature": 0.0, "num_predict": 256},
     }
     try:
-        async with httpx.AsyncClient(timeout=45.0) as client:
+        # First OCR may take 60-90s for LLaVA cold load on CPU
+        async with httpx.AsyncClient(timeout=150.0) as client:
             r = await client.post(url, json=body)
             r.raise_for_status()
             data = r.json()

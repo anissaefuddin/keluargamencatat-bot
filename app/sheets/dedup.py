@@ -13,10 +13,15 @@ def is_duplicate(
     for row in recent_rows:
         if str(row.get("pengguna", "")) != draft.pengguna:
             continue
-        try:
-            row_nominal = int(row.get("nominal", 0))
-        except (ValueError, TypeError):
-            continue
+        v = row.get("nominal", 0)
+        if isinstance(v, (int, float)):
+            row_nominal = int(v)
+        else:
+            try:
+                s = str(v).lower().replace("rp", "").replace(",", "").replace(".", "").strip()
+                row_nominal = int(s) if s else 0
+            except (ValueError, TypeError):
+                continue
         if row_nominal != draft.nominal:
             continue
         ts_raw = str(row.get("tanggal", ""))

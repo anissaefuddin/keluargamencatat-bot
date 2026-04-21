@@ -25,7 +25,7 @@ def _append_sync(row: TxnRow) -> int:
 
 def _get_last_n_sync(n: int) -> list[dict[str, Any]]:
     ws = get_worksheet()
-    all_rows = ws.get_all_records()
+    all_rows = ws.get_all_records(value_render_option="UNFORMATTED_VALUE")
     return all_rows[-n:] if all_rows else []
 
 

@@ -10,7 +10,7 @@ class OllamaError(RuntimeError):
     pass
 
 
-async def chat_json(messages: list[dict], model: str | None = None, timeout: float = 20.0) -> dict:
+async def chat_json(messages: list[dict], model: str | None = None, timeout: float = 45.0) -> dict:
     """Call Ollama /api/chat with format=json; return parsed dict."""
     url = f"{settings.ollama_base_url.rstrip('/')}/api/chat"
     body = {
@@ -18,6 +18,7 @@ async def chat_json(messages: list[dict], model: str | None = None, timeout: flo
         "messages": messages,
         "stream": False,
         "format": "json",
+        "keep_alive": "30m",
         "options": {
             "num_predict": 128,
             "temperature": 0.1,
@@ -43,9 +44,10 @@ async def chat_json(messages: list[dict], model: str | None = None, timeout: flo
 
 
 async def warm_up() -> None:
+    """Warm up the text model at boot. Vision model warms on first use."""
     try:
         await chat_json(
-            [{"role": "user", "content": "ready?"}], timeout=60.0,
+            [{"role": "user", "content": "ready?"}], timeout=120.0,
         )
         log.info("ollama.warm_up_ok")
     except Exception as e:

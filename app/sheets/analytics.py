@@ -8,7 +8,7 @@ from app.utils.time import now_jkt
 
 
 def _all_rows_sync() -> list[dict[str, Any]]:
-    return get_worksheet().get_all_records()
+    return get_worksheet().get_all_records(value_render_option="UNFORMATTED_VALUE")
 
 
 async def _all_rows() -> list[dict[str, Any]]:
@@ -24,8 +24,13 @@ def _parse_ts(row: dict) -> datetime | None:
 
 
 def _parse_nominal(row: dict) -> int:
+    v = row.get("nominal", 0)
+    if isinstance(v, (int, float)):
+        return int(v)
+    # Fallback for formatted strings like "Rp12,345" (in case UNFORMATTED_VALUE fails)
     try:
-        return int(row.get("nominal", 0))
+        s = str(v).lower().replace("rp", "").replace(",", "").replace(".", "").strip()
+        return int(s) if s else 0
     except (ValueError, TypeError):
         return 0
 

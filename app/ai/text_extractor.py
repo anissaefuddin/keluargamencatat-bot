@@ -1,5 +1,5 @@
 from app.ai.ollama_client import chat_json, OllamaError
-from app.ai.prompts import build_messages
+from app.ai.prompts import build_messages, build_categorize_messages
 from app.ai.regex_fallback import extract_by_regex
 from app.domain.models import TxnDraft
 from app.domain.normalizer import parse_nominal, normalize_category
@@ -66,3 +66,34 @@ async def extract(raw: str, pengguna: str = "") -> TxnDraft | None:
         except ValidationError:
             return None
     return None
+
+
+async def categorize_description(description: str) -> dict:
+    """Return {tipe_transaksi, kategori, keterangan} from a caption-style string.
+
+    Does NOT attempt to extract nominal. Safe fallback when LLM fails:
+    regex_fallback's category guess (which is keyword-based).
+    """
+    description = (description or "").strip()
+    if not description:
+        return {"tipe_transaksi": "pengeluaran", "kategori": "lainnya", "keterangan": ""}
+
+    try:
+        data = await chat_json(build_categorize_messages(description))
+        return {
+            "tipe_transaksi": data.get("tipe_transaksi") or "pengeluaran",
+            "kategori": normalize_category(data.get("kategori")),
+            "keterangan": (data.get("keterangan") or description)[:200],
+        }
+    except (OllamaError, ValueError, TypeError) as e:
+        log.warning("ai.categorize_fallback", extra={"err": str(e)[:120]})
+
+    # Keyword-based fallback: pad with a dummy nominal so regex_fallback runs
+    fb = extract_by_regex(description + " 99999")
+    if fb:
+        return {
+            "tipe_transaksi": fb.tipe_transaksi,
+            "kategori": fb.kategori,
+            "keterangan": description[:200],
+        }
+    return {"tipe_transaksi": "pengeluaran", "kategori": "lainnya", "keterangan": description[:200]}
