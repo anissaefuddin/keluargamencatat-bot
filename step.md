@@ -220,12 +220,10 @@ apps/keluarga mencatat/
 ### DAY 1 — 8h target (Core path: text → Sheets)
 
 **T1.1 — Provision all credentials [HIGH, 1h]**
-- Create Telegram bot via @BotFather, copy token. 8655029536:AAEuf1023dhdwp-pNpuX1zuqmxeHdwSbB4g
+- Create Telegram bot via @BotFather, copy token.
 - Create GCP project, enable Sheets API, create Service Account, download JSON key.
-project-catatapps-4bc24e4c7ad6.json
 - Create `Transaksi` Google Sheet, share with service account email (Editor).
 - Collect each family member's Telegram ID (send `/start` to @userinfobot).
-96948242, 2036995756
 - **AC:** `.env` populated with `TELEGRAM_TOKEN`, `GOOGLE_CREDS_PATH`, `SHEET_ID`, `ALLOWED_USER_IDS=1234,5678`.
 
 
