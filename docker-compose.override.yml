@@ -1,0 +1,28 @@
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ./data/ollama:/root/.ollama
+    networks:
+      - app
+    restart: unless-stopped
+
+  keluarga-bot:
+    build:
+      context: ./apps/keluarga mencatat
+    container_name: keluarga-bot
+    env_file: ./apps/keluarga mencatat/.env
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    volumes:
+      - ./apps/keluarga mencatat/secrets:/app/secrets:ro
+      - ./apps/keluarga mencatat/data:/app/data
+      - ./apps/keluarga mencatat/logs:/app/logs
+    networks:
+      - app
+    depends_on:
+      - ollama
+    restart: unless-stopped

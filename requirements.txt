@@ -1,0 +1,10 @@
+aiogram==3.13.*
+httpx>=0.27,<1.0
+gspread==6.*
+google-auth>=2.30
+pydantic>=2.7
+pydantic-settings>=2.4
+python-dotenv>=1.0
+tenacity>=9.0
+pytz
+pytest>=8.0

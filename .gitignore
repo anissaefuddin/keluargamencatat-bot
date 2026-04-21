@@ -1,0 +1,33 @@
+# Secrets
+.env
+secrets/
+*.json
+!package.json
+!pyproject.toml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Logs & data
+logs/
+data/
+backups/
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
