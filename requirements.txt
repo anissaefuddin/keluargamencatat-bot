@@ -8,3 +8,5 @@ python-dotenv>=1.0
 tenacity>=9.0
 pytz
 pytest>=8.0
+pytest-asyncio>=0.23
+faster-whisper>=1.0

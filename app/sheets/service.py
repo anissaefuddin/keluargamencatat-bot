@@ -89,5 +89,5 @@ async def ensure_header() -> None:
             ws.update("A1:G1", [TxnRow.headers()])
             return True
         return False
-    created = await asyncio.to_thread(_sync)
-    log.info("sheets.ensure_header", extra={"created": created})
+    was_created = await asyncio.to_thread(_sync)
+    log.info("sheets.ensure_header", extra={"header_created": was_created})

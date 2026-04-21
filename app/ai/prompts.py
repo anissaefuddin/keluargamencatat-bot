@@ -13,7 +13,9 @@ Return ONLY a JSON object with this exact schema:
 }}
 
 Rules:
-- "rb" / "ribu" / "k" = thousand. "jt" / "juta" = million.
+- "rb" / "ribu" / "k" = thousand (×1000). "jt" / "juta" = million (×1000000).
+- "20 ribu" = 20000. "20k" = 20000. "20rb" = 20000. Do NOT multiply by 10.
+- If the message has NO explicit nominal/angka, return nominal=0 and confidence=0.0. NEVER guess a number.
 - "makan", "makanan", "kopi", "sarapan" → kategori "makanan"
 - "bensin", "grab", "gojek", "ojek", "parkir", "bus" → "transport"
 - "baju", "sepatu", "mall", "toko" → "belanja"
